@@ -1,0 +1,22 @@
+            #active {
+                background-color: green;
+                color: white;
+            }
+
+            #searchbtn:hover {
+                color: azure;
+                background-color: black;
+            }
+
+            #searchbtn {
+                color: whitesmoke;
+                background-color: rgba(14, 151, 83, 0.696);
+            }
+
+            .card {
+                background-color: rgba(184, 184, 197, 0.219);
+            }
+
+            .extrapanel {
+                background-color: rgba(245, 180, 180, 0.411);
+            }

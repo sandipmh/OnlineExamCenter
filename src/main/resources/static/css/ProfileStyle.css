@@ -1,0 +1,38 @@
+        .profile {
+            padding-left: 25%;
+            padding-bottom: 3%;
+            padding-top: 2%;
+            align-items: center;
+
+        }
+
+
+        .card-body {
+            padding-top: 5px;
+            width: 750px;
+            height: 650px;
+            margin-top: 10px;
+            align-self: center;
+            border-top-width: 4px;
+            border-top: thick green;
+            background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
+
+        }
+
+        h4,
+        label,
+        span {
+            color: rgba(0, 0, 0, 0.808);
+        }
+
+        .container-fluid {
+            line-height: 1.22;
+        }
+
+        img {
+            border-radius: 50%;
+        }
+
+        a:hover {
+            cursor: pointer;
+        }

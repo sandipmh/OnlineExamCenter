@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Online Exam Center</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+</head>
+
+<body>
+<section>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <style>
+            body {
+                background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            }
+
+            /* .register-box {
+                max-width: 1500px;
+                height: auto;
+                margin: 0 auto;
+                background-color: #ffffff;
+                border: 1px solid #dee2e6;
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+            } */
+            textarea {
+                border: none;
+                //overflow: auto;
+                font-style: normal;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: larger;
+            }
+        </style>
+  <!-- Register Page -->
+  <div class="container-fluid">
+    <div class="container">
+      <div class="card">
+        <div class="card-body">
+          <div class="row bg-primary">
+            <div class="col-5 offset-3 bg-primary">
+              <h4 class="text-center text-white"> <span
+                      th:text="${exam.exam.examTitle}"></span></h4>
+            </div>
+            <div class="col text-white">
+              <h4 class="text-end">Time : <span id="timerDisplay">00:00:00</span></h4>
+            </div>
+          </div>
+
+          <h6 class="text-end">Total Questions : <span th:text="${exam.exam.numberOfQuestions}" id="totalQuestions"></span>
+          </h6>
+          <h6 class="text-end">Marks : <span th:text="${exam.exam.marks}"></span></h6>
+          <h6 class="text-end" hidden>Time : <span th:text="${exam.exam.time}" id="timeInMinutes"></span>
+          </h6>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h6 id="qid">Q .1</h6>
+          <textarea name="question" id="question" cols="170" rows="8" onselect="showMsg()"
+                    disabled></textarea>
+          <div class="mt-2 ms-3" id="options">
+          </div>
+          <form>
+          <div class="text-end mb-3 mt-4">
+            <button class="btn text-white bg-secondary me-2" type="button" onclick="prev()">Prev</button>
+            <button class="btn text-white bg-primary me-2" type="button" onclick="next()">Next</button>
+            <button class="btn text-white bg-success me-2" type="submit">Submit</button>
+          </div>
+          <div class="mt-3 border mt-4">
+            <div class="row text-center mt-2 mb-2">
+              <input type="hidden" name="examId" th:value="${exam.exam.eid}" >
+              <input type="hidden" th:value="${exam.questions[0].qid}" id="default">
+              <div class="col-1 mb-2" th:each="question, questionStatus : ${exam.questions}">
+                <input type="hidden" name="qid" th:value="${question.qid}" hidden>
+                <input type="hidden" name="question" th:value="${question.question}"
+                       th:id="'q' + ${question.qid}">
+                <input type="hidden" name="singlr" th:value="${question.singleSelection}"
+                       th:id="'s' + ${question.qid}">
+                <input type="hidden" name="marks" th:value="${question.marks}"
+                       th:id="'m' + ${question.qid}">
+                <input type="hidden" name="optionSize" th:value="${#lists.size(question.options)}"
+                       th:id="'l' + ${question.qid}">
+                <input type="hidden" name="answer"
+                       th:each="option, optionStatus : ${question.options}" th:value="${option}"
+                       th:id="'o' + ${optionStatus.index + 1} + ${question.qid}">
+                <button type="button" class="btn border"
+                        th:text="'Q ' + (${questionStatus.index} + 1)" th:id="${question.qid}" th:name="'Q_' + ${questionStatus.index + 1}"
+                        onclick="updateQuestion(this)">Q 1</button>
+              </div>
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+
+    window.onbeforeunload = (event) => {
+    event.preventDefault();
+    return "";
+}
+
+const questionsCount = document.getElementById("totalQuestions").textContent;
+                let globalCount = 1;
+                function prev() {
+                    if (globalCount > 1) {
+                        globalCount = globalCount - 1;
+                        const btnevnt = document.getElementsByName(`Q_${globalCount}`)[0].id;
+                        if (btnevnt) {
+                            updateQuestion(btnevnt);
+                        } else {
+                            console.log("already on question 1");
+                        }
+                    }
+                }
+
+                function next() {
+                    if (globalCount < questionsCount) {
+                        globalCount = globalCount + 1;
+                        const btnevnt = document.getElementsByName(`Q_${globalCount}`)[0].id;
+                        if (btnevnt) {
+                            updateQuestion(btnevnt);
+                        } else {
+                            console.log("already at last question");
+                        }
+                    }
+                }
+
+                function showMsg() {
+                    alert("Copy paste not allowed!");
+                }
+
+                function defaultQuestion() {
+                    const evnt = document.getElementById("default").value;
+                    updateQuestion(evnt);
+                }
+                function updateQuestion(evnt) {
+                    let btnid;
+                    if (evnt instanceof HTMLElement) {
+                        btnid = evnt.id;
+                    } else {
+                        btnid = evnt;
+                    }
+                       const questionName = document.getElementById(btnid).name;
+                       globalCount = parseInt (questionName.substr(2,questionName.length));
+                       console.log(globalCount);
+
+                    console.log(btnid);
+                    document.getElementById(`${btnid}`).className = "btn border bg-success text-white";
+                    const numbr = document.getElementById(`l${btnid}`).value;
+                    const qtnId = document.getElementById(`${btnid}`).textContent;
+                    const question = document.getElementById(`q${btnid}`).value;
+                    document.getElementById("question").value = question;
+                    const nmbr = qtnId.match(/\d+/);
+                    document.getElementById("qid").textContent = `Q. ${nmbr} )`;
+                    addOptions(numbr, btnid);
+                }
+
+                function addOptions(numbr, btnid) {
+                    removeExistingOptions();
+                    var rootDiv = document.getElementById("options");
+                    console.log(numbr);
+                    console.log(btnid);
+                    const singlr = document.getElementById(`s${btnid}`).value;
+                    console.log(singlr);
+                    if (singlr === 'true') {
+                        for (var i = 1; i <= numbr; i++) {
+                            var mainDiv = document.createElement("div");
+                            mainDiv.className = "form-check mt-2";
+                            const optionValue = document.getElementById(`o${i}${btnid}`).value;
+                            var inputElement = document.createElement("input");
+                            inputElement.type = "radio";
+                            inputElement.className = "form-check-input";
+                            inputElement.setAttribute("id", `option${i}`);
+                            inputElement.setAttribute("name", "option"); // Set the same name for all radio buttons
+
+                            var inputlabel = document.createElement("label");
+                            inputlabel.className = "form-check-label";
+                            inputlabel.setAttribute("for", `option${i}`);
+                            inputlabel.textContent = `${i}) ${optionValue}`;
+
+                            mainDiv.appendChild(inputElement);
+                            mainDiv.appendChild(inputlabel);
+
+                            rootDiv.appendChild(mainDiv); // Append the mainDiv to the rootDiv
+                        }
+                    } else {
+                        for (var i = 1; i <= numbr; i++) {
+                            var mainDiv = document.createElement("div");
+                            mainDiv.className = "form-check mt-2";
+                            const optionValue = document.getElementById(`o${i}${btnid}`).value;
+                            var inputElement = document.createElement("input");
+                            inputElement.type = "checkbox";
+                            inputElement.className = "form-check-input";
+                            inputElement.setAttribute("id", `option${i}`);
+                            inputElement.setAttribute("name", "option"); // Set the same name for all radio buttons
+
+                            var inputlabel = document.createElement("label");
+                            inputlabel.className = "form-check-label";
+                            inputlabel.setAttribute("for", `option${i}`);
+                            inputlabel.textContent = `${i}) ${optionValue}`;
+
+                            mainDiv.appendChild(inputElement);
+                            mainDiv.appendChild(inputlabel);
+
+                            rootDiv.appendChild(mainDiv); // Append the mainDiv to the rootDiv
+                        }
+                    }
+                }
+
+                function removeExistingOptions() {
+                    var opnsDiv = document.getElementById("options");
+
+                    // Remove all child elements from the opnsDiv
+                    while (opnsDiv.firstChild) {
+                        opnsDiv.removeChild(opnsDiv.firstChild);
+                    }
+                }
+                defaultQuestion();
+                const examTimer = document.getElementById("timeInMinutes").textContent;
+                function formatTime(seconds) {
+                    const hours = Math.floor(seconds / 3600);
+                    const minutes = Math.floor((seconds % 3600) / 60);
+                    const remainingSeconds = seconds % 60;
+                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+                }
+
+                // Function to update the timer display
+                function updateTimerDisplay(secondsRemaining) {
+                    const timerDisplay = document.getElementById("timerDisplay");
+                    timerDisplay.textContent = ` ${formatTime(secondsRemaining)}`;
+                }
+
+                // Function to start the timer
+                function startTimer() {
+                    let secondsRemaining = examTimer * 60;
+
+                    const timerInterval = setInterval(function () {
+                        if(secondsRemaining > localStorage.getItem('examtimer')){
+                            secondsRemaining = localStorage.getItem('examtimer');
+                        }
+                        localStorage.setItem('examtimer',secondsRemaining);
+                        updateTimerDisplay(secondsRemaining);
+                        secondsRemaining--;
+
+                        if (secondsRemaining < 0) {
+                            clearInterval(timerInterval);
+                            updateTimerDisplay(0);
+                        }
+                    }, 1000);
+                }
+
+                // Start the timer when the page loads
+                startTimer();
+
+            </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+            crossorigin="anonymous"></script>
+</section>
+</body>
+
+</html>

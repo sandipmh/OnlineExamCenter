@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: com.onlineexamcenter.comitsa.OnlineExamCenter.OnlineExamCent
+ erApplication
+

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{admin_menu/dashboard::layout(~{::section})}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings Page</title>
+  <!-- Add Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- Add your custom CSS -->
+
+</head>
+
+<body>
+<section>
+  <style>
+        #searchbtn:hover {
+            color: azure;
+            background-color: black;
+        }
+
+        #searchbtn {
+            color: whitesmoke;
+            background-color: rgba(14, 151, 83, 0.696);
+        }
+
+        .card {
+            //background-color: rgba(177, 193, 187, 0.878);
+            background-color: rgba(184, 184, 197, 0.219);
+        }
+        .active{
+        background-color : green;
+         color : white;
+        }
+          #active{
+        background-color : green;
+         color : white;
+        }
+        .inactive {
+         background-color : red;
+         color : white;
+        }
+        .pending {
+        background-color :blue;
+        color : white;
+         }
+
+    </style>
+  <div class="modal fade pt-3" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+       aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+      <div class="modal-content ">
+        <div class="modal-header">
+          <h6 class="modal-title px-3" id="staticBackdropLabel">View Profile</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                  id="Close"></button>
+        </div>
+
+        <form  enctype="multipart/form-data"  method="post">
+          <div class="modal-body">
+            <div class="row pe-4">
+              <!-- firstName and LastName -->
+              <div class="col-5 offset-1 pb-2">First Name <span class="medatory">*</span></div>
+              <div class="col-5 offset-1 pb-2">Last Name <span class="medatory">*</span></div>
+              <div class="col-5 offset-1"><input type="text" id="firstName" name="firstName"
+                                                 class="form-control"  readonly></div>
+              <div class="col-5 offset-1"><input type="text" id="lastName" name="lastName"
+                                                 class="form-control"  readonly></div>
+              <!-- Email -->
+              <div class="col-10 offset-1 pt-3">Email <span class="medatory">*</span></div>
+              <div class="col-11 offset-1 pt-2"><input type="text" id="email" name="email"
+                                                       class="form-control" readonly>
+              </div>
+              <!-- Country -->
+              <div class="col-10 offset-1 pt-3">Country <span class="medatory">*</span></div>
+              <div class="col-11 offset-1 pt-2"><input type="text" id="country"
+                                                       class="form-control" readonly>
+              </div>
+              <!-- Phone Number -->
+              <div class="col-10 offset-1 pt-3 pb-2">Phone Number <span class="medatory">*</span></div>
+              <div class="col-3 offset-1">
+                <input type="text" id="countryCode"  class="form-control" readonly>
+              </div>
+              <div class="col-7 offset-1"><input type="text" id="mobile" name="mobile"
+                                                 class="form-control"  readonly></div>
+              <!-- Website -->
+              <div class="col-10 offset-1 pt-3">Website </div>
+              <div class="col-11 offset-1 pt-2"><input type="text" id="website" name="website"
+                                                       class="form-control" readonly>
+              </div>
+              <!-- Linkdin -->
+              <div class="col-10 offset-1 pt-3">Linkdin </div>
+              <div class="col-11 offset-1 pt-2"><input type="text" id="linkdin" name="linkdin"
+                                                       class="form-control" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="col-5 offset-9 pb-4">
+            <button type="button" class="btn btn-light btn-outline-secondary pe-2 me-2"
+                    data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-10 offset-1">
+          <h4 class="border-bottom pb-2">Manage Users</h4>
+        </div>
+
+        <div class="col-9 offset-1 pt-3">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                 id="searchInput">
+          <!-- <button class="btn border" typ="submit"><i class="fas fa-search"></i></button> -->
+        </div>
+        <div class="col pt-3">
+          <a th:href="@{'/users'+}" class="btn border" typ="submit" id="searchbtn"><i
+                  class="fas fa-search"></i></a>
+        </div>
+        <div class="col-10 offset-1 mt-3">
+          <table class="table border text-center">
+            <tr class="table-secondary">
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Country</th>
+              <th>Status</th>
+              <th>Website</th>
+              <th>Linkdin</th>
+              <th colspan="2">Action</th>
+            </tr>
+            <tr th:each="user : ${users}">
+              <td th:text="${user.uid}" th:class="'uid' + ${user.uid}">110</td>
+              <td th:text="${user.firstName}+ ' ' + ${user.lastName}" th:class="'name' + ${user.uid}">Sandip
+              </td>
+              <td th:text="${user.email}" th:class="'email' + ${user.uid}">Sandip32m@gmail.com</td>
+              <td th:text="${user.country.countryCode} + ' ' + ${user.mobile}" th:class="'mobile' + ${user.uid}">+91-7769955197</td>
+              <td th:text="${user.country.countryName}" th:class="'country' + ${user.uid}">              </td>
+              <td>
+                                <span th:text="${user.status}"
+                                      th:class="${user.status == 'Pending' ? 'pending' : user.status == 'Active' ? 'active' : 'inactive'}"></span>
+              </td>
+              <td th:text="${user.website}" th:class="'website' + ${user.uid}">
+
+              </td>
+              <td th:text="${user.linkdin}" th:class="'linkdin' + ${user.uid}">              </td>
+
+              <td><button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                          data-bs-target="#staticBackdrop" th:id="${user.uid}" onclick="viewUser(this)">
+                <i class="fas fa-eye"></i></button>
+              </td>
+              <td>
+                <form th:action="@{'/move-users?uid=' + ${user.uid}}" method="post"
+                      th:class="'FB' + ${user.uid}">
+                  <input type="hidden" th:csrf="${_csrf.token}" />
+                  <button type="button" class="btn border btn-success" onclick="delConfirm(this)"
+                          th:id="'B' + ${user.uid}">
+                    <i class="fas fa-user-times"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-4 offset-10" th:if="${users.totalPages > 1}">
+          <ul class="pagination">
+
+            <li class="page-item border ms-2">
+              <a th:href="@{'/manage-users?page=0'}"
+                 th:class="${ 0 == users.number ? 'active' : 'inactive'}"><i
+                      class="fas fa-angle-double-left"></i></a>
+            </li>
+
+            <li class="page-item border ms-2"
+                th:each="pageNumber : ${#numbers.sequence(1, users.totalPages - 1)}"
+                th:if="${pageNumber > 0}">
+              <a th:href="@{'/manage-users?page=' + ${pageNumber}}"
+                 th:class="${pageNumber == users.number ? 'active' : 'inactive'}"><i
+                      th:text="${pageNumber}"></i></a>
+            </li>
+
+            <li class="page-item border ms-2">
+              <a th:href="@{'/manage-users?page='+${users.totalPages-1}} "
+                 th:class="${users.totalPages-1 == users.number ? 'active' : 'inactive'}"><i
+                      class="fas fa-angle-double-right"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const searchLink = document.getElementById("searchbtn");
+
+            searchInput.addEventListener("input", function () {
+                const searchText = searchInput.value;
+                const updatedUrl = `/users?search=${searchText}`;
+                searchLink.href = updatedUrl;
+            });
+        });
+
+        function delConfirm(button) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // User confirmed, submit the form for deletion
+
+                    const buttonClass = `F${button.id}`;
+                    console.log(buttonClass);
+                    document.querySelector(`.${buttonClass}`).submit();
+                }
+                // If the user cancels (chooses "No"), nothing will happen here.
+            });
+
+        }
+
+        function viewUser(user) {
+            clickedBttn = user.id;
+            console.log(`button clicked ${clickedBttn}`);
+            //document.getElementById("uid").value = clickedBttn;
+            const names = document.querySelector(`.name${clickedBttn}`).textContent;
+            const mobile = document.querySelector(`.mobile${clickedBttn}`).textContent;
+            const website = document.querySelector(`.website${clickedBttn}`).textContent;
+            const linkdin = document.querySelector(`.linkdin${clickedBttn}`).textContent;
+            const country = document.querySelector(`.country${clickedBttn}`).textContent;
+            const email = document.querySelector(`.email${clickedBttn}`).textContent;
+            arr = names.split(' ');
+            arr2 = mobile.split(' ');
+            document.getElementById("firstName").value = arr[0];
+            document.getElementById("lastName").value = arr[1];
+            document.getElementById("countryCode").value = arr2[0];
+            document.getElementById("mobile").value = arr2[1];
+            document.getElementById("country").value = country;
+            document.getElementById("website").value = website;
+            document.getElementById("linkdin").value = linkdin;
+            document.getElementById("email").value = email;
+
+        }
+
+  </script>
+</section>
+<!-- Add Bootstrap JavaScript and jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

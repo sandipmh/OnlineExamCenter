@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{admin_menu/dashboard::layout(~{::section})}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings Page</title>
+  <!-- Add Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <!-- Add your custom CSS -->
+
+</head>
+
+<body>
+<section>
+<!--  <link rel="stylesheet" href="questions.css">-->
+  <style>
+        #active {
+            background-color: green;
+            color: white;
+        }
+
+        #searchbtn:hover {
+            color: azure;
+            background-color: black;
+        }
+
+        #searchbtn {
+            color: whitesmoke;
+            background-color: rgba(14, 151, 83, 0.696);
+        }
+
+        .card {
+            background-color: rgba(184, 184, 197, 0.219);
+        }
+
+        .extrapanel {
+            background-color: rgba(245, 180, 180, 0.411);
+        }
+
+        .modal-content {
+            width: 750px;
+            height: auto;
+        }
+
+        #Options {
+            //width: 650px;
+            width: 700px;
+            height: 300px;
+            overflow: auto;
+            background-color: rgba(184, 184, 197, 0.219);
+        }
+    </style>
+<!--  form model for update and view -->
+  <div class="modal fade pt-3" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false"
+       tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+      <div class="modal-content ">
+        <div class="modal-header">
+          <h6 class="modal-title px-3" id="staticBackdropLabel1">View/Update Questions</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                  id="cancel"></button>
+        </div>
+
+        <form th:object="${questions}" enctype="multipart/form-data" th:action="@{/update/question}"
+              method="post" id="updateQuestionForm">
+          <div class="modal-body">
+            <div class="row pe-4">
+<!--              <div class="col-10 offset-1 pb-2" id="sid_label" >Question Id<span-->
+<!--                      class="medatory">*</span></div>-->
+<!--              <div class="col-10 offset-1"><input type="text" id="sid" name="sid" class="form-control"-->
+<!--                                                  readonly></div>-->
+              <div class="col-10 offset-1 pt-3">Question <span class="medatory">*</span></div>
+              <div class="col-11 offset-1 pt-2">
+                                    <textarea id="uQuestion" name="question" class="form-control"
+                                              rows="3"></textarea>
+              </div>
+
+              <div class="col-10 offset-1 pt-3">Answer <span class="medatory">*</span></div>
+              <div class="col-11 offset-1 pt-2">
+                                    <textarea id="uAnswer" name="answer" class="form-control"
+                                              rows="3"></textarea>
+              </div>
+
+              <div class="col-4 offset-1 pt-3">Marks <span class="medatory">*</span></div>
+              <div class="col-6 offset-1 pt-3">Subjects <span class="medatory">*</span></div>
+              <div class="col-4 offset-1 pt-2">
+                <input type="number" id="uMarks" name="marks" class="form-control">
+              </div>
+              <div class="col-6 offset-1 pt-2">
+                <select  class="form-select" aria-label="Default select example" name="subject">
+                  <option th:each="subject : ${subjects}" th:value="${subject.sid}"
+                          th:text="${subject.title}" >
+                  </option>
+                </select>
+              </div>
+
+
+              <div class="col-4 offset-1 mt-3 mb-2">
+
+                <button class="btn btn-success" type="button" onclick="addOptions()">
+                  <i class="fas fa-plus icon"> options</i>
+                </button>
+
+              </div>
+              <div class="col-6 offset-1 mt-3 mb-2 ">
+
+                <input type="radio" class="form-check-input" name="singleSelection" id="uSingleSelect"
+                       value=true checked> <label for="SingleSelect">Single</label>
+                <input type="radio" class="form-check-input" name="singleSelection" id="sMultiSelect"
+                       value=false > <label for="multiSelect">Multi</label>
+
+              </div>
+              <div id="uOptions">
+                <!--                <input type="text" id="optionData" name="options" hidden />-->
+                <input type="hidden" id="uUptionData" name="options"  />
+              </div>
+            </div>
+          </div>
+          <div class="col-4 offset-8 pb-4 ">
+            <input type="hidden" th:csrf="${_csrf.token}" />
+            <button type="button" class="btn btn-light btn-outline-secondary pe-2 me-2"
+                    data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success ms-2 ps-2" onclick="getOptionsFromTextFields()">Save</button>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<!--  form model for the new entry -->
+  <div class="modal fade pt-3" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+       tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+      <div class="modal-content ">
+        <div class="modal-header">
+          <h6 class="modal-title px-3" id="staticBackdropLabel">Add Questions</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                  id="Close"></button>
+        </div>
+
+        <form th:object="${questions}" enctype="multipart/form-data" th:action="@{/save/question}"
+              method="post" id="questionForm">
+          <div class="modal-body">
+            <div class="row pe-4">
+              <div class="col-10 offset-1 pb-2" id="sid_label" hidden>Question Id<span
+                      class="medatory">*</span></div>
+              <div class="col-10 offset-1"><input type="text" id="qid" name="qid" class="form-control"
+                                                  readonly hidden></div>
+              <div class="col-10 offset-1 pt-3">Question <span class="medatory">*</span></div>
+              <div class="col-11 offset-1 pt-2">
+                                    <textarea id="question" name="question" class="form-control"
+                                              rows="3"></textarea>
+              </div>
+
+              <div class="col-10 offset-1 pt-3">Answer <span class="medatory">*</span></div>
+              <div class="col-11 offset-1 pt-2">
+                                    <textarea id="answer" name="answer" class="form-control"
+                                              rows="3"></textarea>
+              </div>
+
+              <div class="col-4 offset-1 pt-3">Marks <span class="medatory">*</span></div>
+              <div class="col-6 offset-1 pt-3">Subjects <span class="medatory">*</span></div>
+              <div class="col-4 offset-1 pt-2">
+                <input type="number" id="marks" name="marks" class="form-control">
+              </div>
+              <div class="col-6 offset-1 pt-2">
+                <select  class="form-select" aria-label="Default select example" name="subject" id="subjects">
+                  <option th:each="subject : ${subjects}" th:value="${subject.sid}"
+                          th:text="${subject.title}" th:selected="${subject.title == subjectContent}" >
+                  </option>
+                </select>
+              </div>
+
+
+              <div class="col-4 offset-1 mt-3 mb-2">
+
+                <button class="btn btn-success" type="button" onclick="addOptions()">
+                  <i class="fas fa-plus icon"> options</i>
+                </button>
+
+              </div>
+              <div class="col-6 offset-1 mt-3 mb-2 ">
+
+                <input type="radio" class="form-check-input" name="singleSelection" id="singleSelect"
+                       value=true checked> <label for="SingleSelect">Single</label>
+                <input type="radio" class="form-check-input" name="singleSelection" id="multiSelect"
+                       value=false > <label for="multiSelect">Multi</label>
+
+              </div>
+              <div id="Options">
+
+                <input type="hidden" id="optionData" name="options"  />
+              </div>
+            </div>
+          </div>
+          <div class="col-4 offset-8 pb-4 ">
+            <input type="hidden" th:csrf="${_csrf.token}" />
+            <button type="button" class="btn btn-light btn-outline-secondary pe-2 me-2"
+                    data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-success ms-2 ps-2" onclick="getOptionsFromTextFields()">Save</button>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<!--  table and its contents-->
+  <div class="conatainer-fluid">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-10 offset-1">
+            <h4 class="border-bottom pb-2">Manage Questions</h4>
+          </div>
+
+          <div class="col-9 offset-1 pt-3">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <!-- <button class="btn border" typ="submit"><i class="fas fa-search"></i></button> -->
+          </div>
+          <div class="col pt-3">
+            <button class="btn border" typ="submit" id="searchbtn"><i class="fas fa-search"></i>
+            </button>
+          </div>
+
+          <div class="col-10 offset-1 mt-3">
+            <div class="extrapanel1 card">
+              <div class="card-body">
+                <div
+                        style="display: flex; flex-direction: row; align-items: flex-start; margin: 10px;">
+                  <a class="btn btn-success" th:href="@{/export/questions}">
+                    <i class="fas fa-download"> Download</i>
+                  </a>
+                  <span style="margin-right: 10px;"></span> <!-- Add space between buttons -->
+                  <a class="btn btn-primary" data-bs-toggle="modal"
+                          data-bs-target="#staticBackdrop" onclick="resetFields()" >
+                    <i class="fas fa-plus icon"> New</i>
+                  </a >
+                </div>
+
+
+              </div>
+            </div>
+            <div class="extrapanel2 card">
+              <div class="card-body">
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                  <form th:action="@{${newAction}}" method="post" id="removeAll">
+                    <input type="hidden" th:csrf="${_csrf.token}" />
+                    <button  type="button" class="btn btn-danger" id="rmBtn" onclick="delMultiConfirm(this)"><i
+                            class="fas fa-trash fa-file"></i>
+                      <span id="count"> Remove</span>
+                    </button>
+                  </form>
+<!--                  </button>-->
+                </div>
+              </div>
+            </div>
+            <table class="table border text-center">
+              <tr class="table-secondary">
+                <td><input type="checkbox" name="selectAll" id="selectAll"></td>
+                <th>ID</th>
+                <th>Question</th>
+                <th>Answer</th>
+                <th>Marks</th>
+                <th>Subjects</th>
+                <th>Options</th>
+                <th>Type</th>
+                <th colspan="2">Action</th>
+              </tr>
+              <tr th:each="question : ${questions}">
+                <td><input type="checkbox" name="" class="checkbox" th:value="${question.qid}"></td>
+                <td th:text="${question.qid}" th:id="'qid' + ${question.qid}"></td>
+                <td th:text="${question.question}" class="text-start" th:id="'question' + ${question.qid}"></td>
+                <td th:text="${question.answer}" class="text-start" th:id="'answer' + ${question.qid}"></td>
+                <td th:text="${question.marks}" th:id="'marks' + ${question.qid}"></td>
+                <td th:text="${question.subject.title}" th:id="'subject' + ${question.qid}" th:value="${question.subject.sid}"></td>
+                <td class="text-start" >
+                  <ol th:id="'options' + ${question.qid}">
+                    <li th:each="option : ${question.options}" th:text="${option.optionText}" th:id="'option' + ${question.qid}"></li>
+                  </ol>
+                </td>
+                <td class="text-start" th:text="${question.singleSelection ? 'Single Select' : 'Multi Select'}" th:id="'select' + ${question.qid}"></td>
+<!--                <td><button type="button" class="border btn btn-secondary">-->
+<!--                  <i class="fas fa-eye"></i></button>-->
+<!--                </td>-->
+                <td><button type="button" class="border btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop" th:id="${question.qid}" onclick="viewItem(this)"> <span class="btn-success"><i class="fas fa-eye"></i></span>
+                  <i class="fas fa-edit"></i></button>
+                </td>
+                <td>
+                  <form th:action="@{'/move-questions?qid=' + ${question.qid}}" method="post"
+                        th:class="'FB' + ${question.qid}">
+                    <input type="hidden" th:csrf="${_csrf.token}" />
+                    <button type="button" class="btn btn-danger"
+                            onclick="delConfirm(this)" th:id="'B' + ${question.qid}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+
+            </table>
+          </div>
+          <div class="col-4 offset-10">
+            <ul class="pagination">
+
+              <li class="page-item border ms-2">
+                <a th:href="@{'/manage-questions?page=0'}"
+                   th:class="${ 0 == questions.number ? 'active' : 'inactive'}"><i
+                        class="fas fa-angle-double-left"></i></a>
+              </li>
+
+              <li class="page-item border ms-2"
+                  th:each="pageNumber : ${#numbers.sequence(1, questions.totalPages - 1)}"
+                  th:if="${pageNumber > 0}">
+                <a th:href="@{'/manage-questions?page=' + ${pageNumber}}"
+                   th:class="${pageNumber == questions.number ? 'active' : 'inactive'}"><i
+                        th:text="${pageNumber}"></i></a>
+              </li>
+
+              <li class="page-item border ms-2">
+                <a th:href="@{'/manage-questions?page='+${questions.totalPages-1}} "
+                   th:class="${questions.totalPages-1 == questions.number ? 'active' : 'inactive'}"><i
+                        class="fas fa-angle-double-right"></i></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+  </div>
+  <script src="/js/questions.js">
+</script>
+</section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
