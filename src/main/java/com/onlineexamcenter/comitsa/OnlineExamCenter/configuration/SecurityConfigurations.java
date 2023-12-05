@@ -15,6 +15,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfigurations {
+    @Autowired
+    private UserDetailsServiceImpl userDetailsServiceImpl;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -33,21 +35,24 @@ public class SecurityConfigurations {
                         .ignoringRequestMatchers("/sign/user", "/home")
                 );
 
-       // return http.build();
-
         return http.build();
     }
     @Bean
-    public InMemoryUserDetailsManager userDetailsManager(){
-        UserDetails admin = User.withDefaultPasswordEncoder().password("1122")
-                .username("admin@exams.com")
-                .authorities("admin")
-                .build();
-        UserDetails user = User.withDefaultPasswordEncoder().username("user@exams.com")
-                .password("1234")
-                .authorities("user")
-                .build();
-        return new InMemoryUserDetailsManager(admin,user);
+    public InMemoryUserDetailsManager userDetailsManager() {
+        return new InMemoryUserDetailsManager();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsServiceImpl);
+        authProvider.setPasswordEncoder(new BCryptPasswordEncoder());
+        return authProvider;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
     }
 }
 
