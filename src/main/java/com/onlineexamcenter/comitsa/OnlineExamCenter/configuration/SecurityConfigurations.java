@@ -40,10 +40,10 @@ public class SecurityConfigurations {
     @Bean
     public InMemoryUserDetailsManager userDetailsManager(){
         UserDetails admin = User.withDefaultPasswordEncoder().password("1122")
-                .username("sandip32mh@gmail.com")
+                .username("admin@exams.com")
                 .authorities("admin")
                 .build();
-        UserDetails user = User.withDefaultPasswordEncoder().username("rahul@gmail.com")
+        UserDetails user = User.withDefaultPasswordEncoder().username("user@exams.com")
                 .password("1234")
                 .authorities("user")
                 .build();
