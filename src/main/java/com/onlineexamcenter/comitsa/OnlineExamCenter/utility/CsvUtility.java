@@ -15,25 +15,6 @@ import java.util.stream.Stream;
 
 @Service
 public class CsvUtility {
-    public void exportToCsv(HttpServletResponse response, List<Subjects> subjects) throws IOException{
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=\"data.csv\"");
-
-        CSVWriter csvWriter = new CSVWriter(response.getWriter());
-
-        // Add CSV header
-        String[] header = {"Column1", "Column2", "Column3"}; // Specify column names
-        csvWriter.writeNext(header);
-
-
-        // Write data to the CSV file
-        for (Subjects entity : subjects) {
-            String[] row = {entity.getTitle(), entity.getDescription(),entity.getSid().toString(),entity.getQuestions().toString()};
-            csvWriter.writeNext(row);
-        }
-
-        csvWriter.close();
-    }
     public <T> void writeCsvData(HttpServletResponse response, List<T> objects){
 
         if (objects.isEmpty()) {
